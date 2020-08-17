@@ -1,2 +1,2 @@
 # omscsapplication
-Sample of projects created by Christian Gonzalez for the OMSCS application
+Sample of projects created by Christian Gonzalez and selected for the OMSCS application
