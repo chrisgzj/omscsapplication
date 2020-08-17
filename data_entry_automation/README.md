@@ -1,1 +1,1 @@
-This project aims to upload automatically the academic results of several students to the Mexico's educational authority platfomr using python and Selenium Webdriver. An example of the program running can be found in the video.
+This project aims to upload automatically the academic results of several students to the Mexico's educational authority platform using python and Selenium Webdriver. The code has been used with three different schools. An example of the program running can be found in the video. 
