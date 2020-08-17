@@ -1,0 +1,35 @@
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <style>
+    .centrar{
+      text-align: center;
+    }
+    .alejar{
+      padding-left: 5%;
+    }
+    </style>
+  </head>
+  <body>
+    <div class=row>
+
+      <div class="col-sm-5 alejar">
+  <h2 class="page-title jumbotron centrar" style="font-variant: small-caps">Carsai Ventas - Inicio de sesión</h2>
+  <form method="post">
+    {% csrf_token %}
+    <h3 style="font-variant: small-caps"> Usuario: </h3>
+    {% render_field form.username class="form-control" %}
+    <h3 style="font-variant: small-caps"> Contraseña: </h3>
+    {% render_field form.password class="form-control" %}
+    <div style="padding-top: 3%">
+    <button type="submit" class="btn btn-primary">Aceptar</button>
+    </div>
+  </form>
+</div>
+</div>
