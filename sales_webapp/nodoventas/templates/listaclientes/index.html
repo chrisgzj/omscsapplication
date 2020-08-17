@@ -1,0 +1,33 @@
+
+    {% extends "Base.html" %}
+    {% block title %}Lista clientes{% endblock %}
+    {% block main %}
+    <div class="container">
+    <h1 class="page-title jumbotron centrar" style="font-variant:small-caps">Clientes activos</h1>
+
+    <table class="table" style="width:100%">
+        <tr>
+            <th>Nombre del cliente</th>
+            <th>Vendedor</th>
+            <th>Tipo de crédito</th>
+            <th>NSS</th>
+            <th>Casa</th>
+        </tr>
+        {% for cliente in clientes %}
+          {% if ver_todos or cliente.vendedor.correo == correo_usuario %}
+          <tr>
+              <td><a href="/cliente_{{cliente.id}}/">{{cliente.nombre}} {{cliente.apellido}}</a></td>
+              <td>{{cliente.vendedor}}</td>
+              <td>{{cliente.tipo_credito}}</td>
+              <td>{{cliente.nss}}</td>
+              <td>
+              {% if cliente.casas_por_cliente.first %}
+              <a href="/{{cliente.casas_por_cliente.first.casa_id}}"> {{cliente.casas_por_cliente.first}} </a>
+              {% endif %}
+              </td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+    </table>
+    </div>
+    {% endblock %}

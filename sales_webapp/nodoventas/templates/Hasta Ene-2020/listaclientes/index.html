@@ -1,0 +1,197 @@
+{% load widget_tweaks %}
+{% load static %}
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/media/static/prueba.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <title>Formulario compradores</title>
+    <style>
+     p{
+        font-size:12px;
+        float:left;
+        clear:both;
+        float:left;
+        margin-right:15px;
+     }
+      @media all and (max-width:750px){
+      .condicional{
+        margin-left:25%;
+      }
+    }
+    @media all and (min-width:900px){
+      .condicional{
+        margin-left:-20%;
+      }
+    }
+      .alinear{
+        text-align: left;
+      }
+      .centrar{
+        text-align: center;
+      }
+      .enlinea{
+        display: inline-block;
+        vertical-align: top;
+      }
+      .espacios{
+        white-space: pre;
+      }
+      .panel-seccion {
+      background:#EAEAEA;
+      text-align: center;
+      padding-bottom: 1%;
+      font-variant: small-caps}
+      .form-control{
+        width: 75%
+      }
+      .btn-centrar{
+        padding-top: 2%;
+        padding-left: 0%;
+      }
+
+        .table{
+        width: 50%;
+        float:left;
+        padding-left:40px;
+
+        }
+
+        .contacto{
+        font-size:15pt;
+        font-weight: bold;
+        }
+
+        .navbar{
+            width:"100%";
+            background:#184626;
+            font-weight: 300;
+        }
+
+        ul{
+        text-align: left;
+        display:inline;
+        margin:0;
+        padding:0;
+        list-style:none; }
+
+        ul li{
+        font:bold 12px;
+        display: inline-block;
+        position: relative;
+        padding: 25px 20px;
+        background: #184626;
+        }
+
+        ul li a{
+        text-decoration:none;
+        padding: 25px 20px;
+        color:white;
+        font-size:16px;
+        }
+
+        ul li a:hover {
+        background:#eeeded;
+        color:#184626;;
+        text-decoration: none;
+
+        }
+
+        ul li ul{
+        padding:0;
+        position:absolute;
+        top:70px;
+        left:0;
+        width:250px;
+        display:none;
+        }
+
+        ul li:hover ul, ul li ul:hover{
+        display:block;
+
+        }
+       ul li ul li{
+	   background: #184626;
+       display: block;
+       }
+
+        ul li ul li:hover {
+        background:#eeeded;
+
+        }
+
+        ul li: hover ul{
+        display:block;
+        opacity:1;
+        visibility:visible;
+        }
+
+        ul ul li:hover li {
+        display:block;
+        }
+
+        .portones {
+        font-weight: 500;
+        font-size: 18px;
+        }
+
+ </style>
+
+    </head>
+<body>
+    <header>
+    <div class="navbar">
+    <ul>
+        <li class="portones"><a href="{% url 'casadefault' %}">PORTONES</a></li>
+        <li><a href=""> Clientes </a>
+          <ul style="width:110%">
+              <li> <a href="{% url 'altacliente' %}">Alta</a></li>
+              <li> <a href="/listaclientes/">Modificación</a></li>
+         </ul>
+        <li><a href=""> Casas </a>
+            <ul style="width:130%">
+              <li> <a href="/casas_Cipreses/">Cipreses</a></li>
+              <li> <a href="/casas_Cedros/">Cedros</a></li>
+              <li> <a href="/casas_Jacarandas/">Jacarandas</a></li>
+              <li> <a href="/casas_Orquideas/">Orquídeas</a></li>
+              <li> <a href="/casas_Laureles/">Laureles</a></li>
+              <li> <a href="/casas_Magnolias/">Magnolias</a></li>
+              <li> <a href="/casas_Palmas/">Palmas</a></li>
+           </ul>
+        </li>
+        <li><a href="#">Contacto</a></li>
+
+
+    </ul>
+    </div>
+    </header>
+    <main>
+    <div class="container">
+
+    <h1 class="page-title jumbotron centrar" style="font-variant:small-caps">Clientes activos</h1>
+    <p class=claseprueba> "hola" </p>
+    <table class="table" style="width:100%">
+        <tr>
+            <th>Nombre del cliente</th>
+            <th>Vendedor</th>
+            <th>Tipo de crédito</th>
+        </tr>
+        {% for cliente in clientes %}
+          {% if ver_todos or cliente.vendedor.correo == correo_usuario %}
+          <tr>
+              <td><a href="/cliente_{{cliente.id}}/">{{cliente.nombre}} {{cliente.apellido}}</a></td>
+              <td>{{cliente.vendedor}}</td>
+              <td>{{cliente.tipo_credito}}</td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+    </table>
+    </div>
+
+    </main>
+</body>
+</html>

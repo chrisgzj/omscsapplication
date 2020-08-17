@@ -1,0 +1,949 @@
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <style>
+    @media all and (max-width:750px){
+      .condicional{
+        margin-left:25%;
+      }
+    }
+    @media all and (min-width:900px){
+      .condicional{
+        margin-left:-20%;
+      }
+    }
+
+      .alinear{
+        text-align: left;
+      }
+      .centrar{
+        text-align: center;
+      }
+      .enlinea{
+        display: inline-block;
+        vertical-align: top;
+      }
+      .espacios{
+        white-space: pre;
+      }
+      .panel-seccion {
+      background:#EAEAEA;
+      text-align: center;
+      padding-bottom: 1%;
+      font-variant: small-caps}
+      .form-control{
+        width: 75%
+      }
+      .ancho-fecha{
+        width: 30%;
+      }
+      .btn-centrar{
+        padding-top: 2%;
+        padding-left: 0%;
+      }
+      .containeryo > *{
+          display: inline-block;
+      }
+     .popover-title {
+       background-color: #808080;
+       color: #FFFFFF;
+       font-size: 16px;
+       text-align:center;
+     }
+     .popover-content {
+       padding: 10px;
+       font-size: 12px;
+       font-weight: bold;
+     }
+
+     .contacto{
+     font-size:15pt;
+     font-weight: bold;
+     }
+
+     .navbar{
+         width:"100%";
+         background:#184626;
+         font-weight: 300;
+         z-index: 50;
+     }
+
+     .btn-portones{
+         background: #2C7845;
+         color: white
+     }
+
+     .text-primary{
+         color: #2C7845;
+     }
+
+     ul{
+     text-align: left;
+     display:inline;
+     margin:0;
+     padding:0;
+     list-style:none; }
+
+     ul li{
+     font:bold 12px;
+     display: inline-block;
+     position: relative;
+     padding: 25px 20px;
+     background: #184626;
+     }
+
+     ul li a{
+     text-decoration:none;
+     padding: 25px 20px;
+     color:white;
+     font-size:16px;
+     }
+
+     ul li a:hover {
+     background:#eeeded;
+     color:#184626;;
+     text-decoration: none;
+
+     }
+
+     ul li ul{
+     padding:0;
+     position:absolute;
+     top:70px;
+     left:0;
+     width:250px;
+     display:none;
+     }
+
+     ul li:hover ul, ul li ul:hover{
+     display:block;
+
+     }
+     ul li ul li{
+     background: #184626;
+     display: block;
+     }
+
+     ul li ul li:hover {
+     background:#eeeded;
+
+     }
+
+     ul li: hover ul{
+     display:block;
+     opacity:1;
+     visibility:visible;
+     }
+
+     ul ul li:hover li {
+     display:block;
+     }
+
+     .portones {
+     font-weight: 500;
+     font-size: 18px;
+     }
+
+
+    </style>
+
+    <script type="text/javascript">
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js";
+    var nodos_saldos = [];
+    var precio_venta_original = 720000; //Conectar con algo.
+    var precios_accesorios = ["0.00","37,500.00","12,500.00","13,500.00","8,500.00","12,500.00","14,500.00", "8,500.00", "10,500.00", "12,000.00", "8,500.00", "18,000.00"];
+
+    function extraer_num(div_padre_extraer){
+      var num_temp = div_padre_extraer.children[1].children[0].children[0].value;
+      num_temp = num_temp.replace(/[, ]+/g, "").trim();
+      return parseInt(num_temp);
+    }
+
+    function actualizar_subtotal(num_id){
+      var presente = document.querySelector('#id-totsl-' + num_id);
+      if (presente){
+        var considerar = false;
+        var subtotal = 0;
+        var div_ppal = document.querySelector('#div-ppal');
+        for (var i = 0; i < div_ppal.children.length; i++){
+          var id_tmp = div_ppal.children[i].id;
+          if (id_tmp == "idsaldos-" + num_id)
+            considerar = true;
+          if (id_tmp == "id-totsl-" + num_id)
+            considerar = false;
+          if (considerar)
+            subtotal = subtotal + extraer_num(div_ppal.children[i]);
+        }
+        var div_llenar = document.querySelector('#id-totsl-' + num_id);
+        div_llenar.children[1].children[0].children[0].value = numberWithCommas(subtotal.toString());
+      }
+    }
+
+    function extraer_subsaldos(div_ini){
+      var div_ppal = document.querySelector('#div-ppal');
+      var ls_subs = [];
+      var nom_tmp_sub, val_tmp_sub, obj_tmp_sub;
+      while (div_ini < div_ppal.children.length && div_ppal.children[div_ini].id.includes("id-subsl")){
+        nom_tmp_sub = div_ppal.children[div_ini].children[0].children[0].value;
+        val_tmp_sub = extraer_num(div_ppal.children[div_ini]);
+          if (nom_tmp_sub != "" && val_tmp_sub != 0){
+            obj_tmp_sub = {};
+            obj_tmp_sub.concepto = nom_tmp_sub;
+            obj_tmp_sub.monto = val_tmp_sub;
+            ls_subs.push(obj_tmp_sub);
+          }
+          div_ini++;
+        }
+      return ls_subs;
+    }
+
+    function cadena_saldos(){
+      var div_ppal = document.querySelector('#div-ppal');
+      var saldos_json = [];
+      var cont_subs = 1;
+      var obj_tmp, nom_tmp, val_tmp, ls_subs;
+      for (var i = 0; i < div_ppal.children.length; i++){
+        var id_tmp = div_ppal.children[i].id;
+        if (id_tmp.includes("idsaldos")){
+          nom_tmp = div_ppal.children[i].children[0].children[0].value;
+          val_tmp = extraer_num(div_ppal.children[i]);
+          if (nom_tmp != "" && val_tmp != 0){
+            obj_tmp = {};
+            obj_tmp.concepto = nom_tmp;
+            obj_tmp.monto = val_tmp;
+            if (i + 1 < div_ppal.children.length && div_ppal.children[i+1].id.includes("id-subsl"))
+              obj_tmp.subsaldos = extraer_subsaldos(i+1);
+            saldos_json.push(obj_tmp);
+          }
+        }
+      }
+      document.querySelector('#list_saldos_hidd').value = JSON.stringify(saldos_json);
+    }
+
+    function actualizar_diferencia(){
+      var div_ppal = document.querySelector('#div-ppal');
+      var diferencia = 0;
+      for (var i = 0; i < div_ppal.children.length; i++){
+        var id_tmp = div_ppal.children[i].id;
+        if (id_tmp.includes("idsaldos") || id_tmp.includes("id-subsl")){
+          diferencia = diferencia + extraer_num(div_ppal.children[i]);
+        }
+      }
+      diferencia = diferencia - precio_venta_original;
+      var div_dif = document.querySelector('#nodo-diff');
+      div_dif.children[1].children[0].children[0].value = numberWithCommas(diferencia.toString());
+      if (diferencia == 0)
+        div_dif.style = "display:none";
+      else
+        div_dif.style = "padding-top:2%";
+      cadena_saldos();
+    }
+
+    function numberWithCommas(x) {
+        if (x != 0){
+          x = x.replace(/[^0-9.,-]+/g,"");
+          x = x.replace(/[, ]+/g, "").trim();
+          var parts = x.toString().split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          if (parts.length == 1)
+            parts[1] = "00";
+          return parts.join(".");
+        }else{
+          return "0.00";
+        }
+    }
+
+    function cambiar_num(campo){
+      var string_temp = campo.value.replace(/[^0-9.,-]+/g,"");
+      if (string_temp != "")
+        campo.value = numberWithCommas(campo.value);
+      else
+        campo.value = "0.00";
+      actualizar_diferencia();
+      var id_padre = campo.parentElement.parentElement.parentElement.id;
+      id_padre_num = parseInt(id_padre.substring(9,100));
+      actualizar_subtotal(id_padre_num);
+    }
+    function sin_comas(campo){
+      campo.value = campo.value.replace(/[, ]+/g, "").trim();
+    }
+
+    function agregar_ppal() {
+      var btn_nothing = agregar_ppal_inicial("",0);
+      return false;
+    }
+
+    function agregar_ppal_inicial(concepto, monto){
+      const nvo = document.querySelector('#templ-saldo').cloneNode(true);
+      var id_actual = nodos_saldos.length;
+      nvo.setAttribute('id', 'idsaldos-' + id_actual);
+      nvo.style = "padding-top:2%";
+      nvo.children[0].children[0].value = concepto;
+      nvo.children[1].children[0].children[0].value = numberWithCommas(monto);
+      var nodo_diff = document.querySelector('#nodo-diff');
+      var lista_nodos = document.querySelector('#div-ppal');
+      lista_nodos.insertBefore(nvo, nodo_diff);
+      nva_lista = [];
+      nva_lista.push(id_actual);
+      nodos_saldos.push(nva_lista);
+      return nvo.children[1].children[0].children[2];
+    }
+
+    function agregar_secundario(btn){
+      agregar_secundario_inicial(btn, "", 0);
+      return false;
+    }
+
+    function agregar_secundario_inicial(btn, concepto, monto){
+      var nodo_parent = btn.parentElement.parentElement.parentElement;
+      var id_padre = parseInt(nodo_parent.id.substring(9,100));
+      var list_padre = nodos_saldos[id_padre];
+      list_padre.push(1);
+      const nvo = document.querySelector('#templ-concepto').cloneNode(true);
+      nvo.setAttribute('id', "id-subsl-" + id_padre); //Probablemente valdría la pena un id único.
+      nvo.style = "padding-top:2%";
+      nvo.children[0].children[0].value = concepto;
+      nvo.children[1].children[0].children[0].value = numberWithCommas(monto);
+      var nodo_saldo = document.querySelector('#id-totsl-' + id_padre);
+      if (nodo_saldo)
+          nodo_parent.parentElement.insertBefore(nvo, nodo_saldo);
+      else
+        nodo_parent.parentElement.insertBefore(nvo, nodo_parent.nextSibling);
+      if (list_padre.length == 2){
+        const nvo_total = document.querySelector('#templ-total').cloneNode(true);
+        nvo_total.setAttribute('id', "id-totsl-" + id_padre);
+        nodo_parent.parentElement.insertBefore(nvo_total, nvo.nextSibling);
+        nvo_total.style = "padding-top:2%";
+        nodo_parent.children[0].children[0].style = "width: 110%; background-color: #C1DCEB";
+        nodo_parent.children[1].children[0].children[3].disabled = "disabled";
+      }
+      return false;
+    }
+
+    function eliminar_actual(btn){
+      var div_delete = btn.parentElement.parentElement.parentElement;
+      var div_idnum = parseInt(div_delete.id.substring(9,100));
+      if (div_delete.id.includes("idsaldos")){
+        nodos_saldos[div_idnum] = [];
+      }
+      if (div_delete.id.includes("id-subsl")){
+        nodos_saldos[div_idnum].pop();
+        if (nodos_saldos[div_idnum].length == 1){
+          var por_del = document.querySelector('#id-totsl-' + div_idnum);
+          por_del.remove();
+          var por_rest = document.querySelector('#idsaldos-' + div_idnum);
+          por_rest.children[0].children[0].style = "font-weight:bold; width: 110%; background-color: #C1DCEB";
+          por_rest.children[1].children[0].children[3].removeAttribute("disabled");
+        }
+      }
+      div_delete.remove();
+      actualizar_diferencia();
+      actualizar_subtotal(div_idnum);
+    }
+
+    function agregar_accesorio(){
+      const nvo = document.querySelector('#acces-templ').cloneNode(true);
+      nvo.setAttribute('id', "id-acces"); //Probablemente valdría la pena un id único.
+      nvo.style = "";
+      var total_acces = document.querySelector('#acces-total')
+      total_acces.parentElement.insertBefore(nvo, total_acces);
+      $('[data-trigger="hover"]').popover();
+      return false;
+    }
+
+    function agregar_accesorio_inicial(val_ini){
+      const nvo = document.querySelector('#acces-templ').cloneNode(true);
+      nvo.setAttribute('id', "id-acces"); //Probablemente valdría la pena un id único.
+      nvo.style = "";
+      nvo.children[0].children[0].value = val_ini;
+      var total_acces = document.querySelector('#acces-total')
+      total_acces.parentElement.insertBefore(nvo, total_acces);
+      $('[data-trigger="hover"]').popover();
+      actualizar_precio_accesorio(nvo.children[0].children[0]);
+      return false;
+    }
+
+    function eliminar_accesorio_actual(btn){
+      btn.parentElement.parentElement.remove();
+      actualizar_total_acces();
+      return false;
+    }
+
+    function actualizar_total_acces(){
+      var elem_precios = document.querySelectorAll('#id-acces');
+      var total_accesorios = 0;
+      var list_accesorios = "";
+      var costo_temp;
+      for (var i=0; i<elem_precios.length; i++){
+        costo_temp = elem_precios[i].children[1].children[0].value;
+        costo_temp = costo_temp.replace(/[, ]+/g, "").trim();
+        total_accesorios = total_accesorios + parseInt(costo_temp);
+        list_accesorios = list_accesorios + elem_precios[i].children[0].children[0].value + "/";
+      }
+      document.querySelector('#acces-total').children[1].children[0].value = numberWithCommas(total_accesorios.toString());
+      document.querySelector('#list_acces_hidd').value = list_accesorios;
+      return false;
+    }
+
+    function actualizar_precio_accesorio(selectwidg){
+      var precio_add = precios_accesorios[parseInt(selectwidg.value)];
+      selectwidg.parentElement.parentElement.children[1].children[0].value = precio_add;
+      actualizar_total_acces();
+      return false;
+    }
+
+    $(window).bind("load", function() {actualizar_diferencia()});
+
+    </script>
+
+
+  </head>
+  <body>
+    <header>
+    <div class="navbar">
+    <ul>
+        <li class="portones"><a href="{% url 'casadefault' %}">PORTONES</a></li>
+        <li><a href=""> Clientes </a>
+          <ul style="width:110%">
+              <li> <a href="{% url 'altacliente' %}">Alta</a></li>
+              <li> <a href="/listaclientes/">Modificación</a></li>
+         </ul>
+        <li><a href=""> Casas </a>
+            <ul style="width:130%">
+              <li> <a href="/casas_Cipreses/">Cipreses</a></li>
+              <li> <a href="/casas_Cedros/">Cedros</a></li>
+              <li> <a href="/casas_Jacarandas/">Jacarandas</a></li>
+              <li> <a href="/casas_Orquideas/">Orquídeas</a></li>
+              <li> <a href="/casas_Laureles/">Laureles</a></li>
+              <li> <a href="/casas_Magnolias/">Magnolias</a></li>
+              <li> <a href="/casas_Palmas/">Palmas</a></li>
+           </ul>
+        </li>
+        <li><a href="#">Contacto</a></li>
+    </ul>
+    </div>
+    </header>
+
+<main>
+ <div class="container">
+      <div class="row">
+            <div class="col-sm-5">
+                <h1 class="page-title jumbotron centrar" style="font-variant: small-caps">{{nombre_casa}}</h1>
+                <table class="table">
+                <tr>
+                    <th class="centrar {{color_apartado}}" style="width=25%">Apartado</th>
+                    <th class="centrar {{color_construccion}}" style="width=25%">Construcción</th>
+                    <th class="centrar {{color_expediente}}" style="width=25%">Expediente</th>
+                    <th class="centrar {{color_firma}}" style="width=25%">Firma</th>
+                </tr>
+              </table>
+            </div>
+
+        <div class="col-sm-1"></div>
+         <div class="col-sm-6" style="padding-top: 2%">
+           <div class="panel panel-seccion">
+             <h2>Datos Generales</h2>
+           </div>
+            <p>
+               <span class="text-primary">Dúplex:</span> {{duplex}}
+               <span  class="espacios">     </span>
+               <span class="text-primary">Fachada:</span> {{fachada}}
+           </p>
+           <form class="form" method="post" enctype="multipart/form-data">
+             {% csrf_token %}
+             <input type='hidden' value='form_grales' name='id_form'>
+             <p class="text-primary">Cliente:</p>
+             {% if edita_generales %}
+                {% render_field form_gralcasa.cliente class="form-control" %}
+             {% else %}
+                {% render_field form_gralcasa.cliente class="form-control" disabled="disabled" %}
+             {% endif %}
+              <p class="text-primary" style="padding-top: 2%">Vendedor:</p>
+              {% if edita_generales %}
+                 {% render_field form_gralcasa.vendedor class="form-control" %}
+              {% else %}
+                 {% render_field form_gralcasa.vendedor class="form-control" disabled="disabled" %}
+              {% endif %}
+             {% if edita_generales %}
+                <div style="padding-top: 3%"><button type=submit class="btn btn-portones">Guardar</button></div>
+             {% endif %}
+           </form>
+          </div>
+        </div>
+      <hr>
+    <div class="row">
+        <div class="col-sm-12 panel panel-seccion">
+          <h2>Fechas y Estados</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <h3>Inicio de venta</h3>
+          <form class="form-group" method="post" enctype="multipart/form-data">
+            <input type='hidden' value='form_inicioventa' name='id_form'>
+            {% csrf_token %}
+
+            {% include "filetemplate.html" with nombre_archivo="comprobante de apartado" var_edita=edita_venta form=form_apartado %}
+            {% include "filetemplate.html" with nombre_archivo="comprobante de precalificación" var_edita=edita_venta form=form_precalif %}
+
+            <p class="text-primary">Observaciones:</p>
+            {% if edita_venta %}
+              {% render_field form_ini_venta.obs_inicio class="form-control" rows="4" %}
+            {% else %}
+              {% render_field form_ini_venta.obs_inicio class="form-control reducir" readonly="readonly" rows="4" %}
+            {% endif %}
+
+            {% if edita_venta %}
+               <div style="padding-top: 3%"><button type=submit class="btn btn-portones">Guardar inicio de venta</button></div>
+            {% endif %}
+
+          </form>
+
+
+          <h3>Avance de construcción</h3>
+          <form class="form-group" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type='hidden' value='form_construccion' name='id_form'>
+            <p class="text-primary">Etapa actual y fecha de inicio de la etapa:</p>
+            <div class=row>
+              <div class=col-sm-5>
+            {% if edita_construccion %}
+              {% render_field form_construccion.etapa_actual class="form-control" %}
+            {% else %}
+              {% render_field form_construccion.etapa_actual class="form-control" disabled="disabled" %}
+            {% endif %}
+              </div>
+              <div class=col-sm-5>
+            {% if edita_construccion %}
+              {% render_field form_construccion.inicio_etapa type="date" class="form-control" %}
+            {% else %}
+              {% render_field form_construccion.inicio_etapa type="date" class="form-control" disabled="disabled" %}
+            {% endif %}
+              </div>
+           </div>
+
+            <p class="text-primary" style="padding-top: 3%">Fecha de fin de obra:</p>
+            <div class="containeryo">
+
+                {% if edita_construccion %}
+                  {% render_field form_fechafin.fecha class="form-control ancho-fecha" type="date" %}
+                {% else %}
+                  {% render_field form_fechafin.fecha class="form-control ancho-fecha" type="date" readonly="readonly" %}
+                {% endif %}
+
+                <p></p>
+
+                {% if edita_construccion %}
+                  {% render_field form_fechafin.aprox class="form_control" %}
+                {% else %}
+                  {% render_field form_fechafin.aprox class="form_control" disabled="disabled" %}
+                {% endif %}
+
+                <p class="text-primary">Fecha aprox.</p>
+
+            </div>
+
+            <p class="text-primary" style="padding-top: 3%">Fecha de DTU:</p>
+            <div class=containeryo>
+                {% if edita_construccion %}
+                  {% render_field form_fechadtu.fecha class="form-control ancho-fecha" type="date" %}
+                {% else %}
+                  {% render_field form_fechadtu.fecha class="form-control ancho-fecha" type="date" readonly="readonly" %}
+                {% endif %}
+
+                <p></p>
+
+                {% if edita_construccion %}
+                  {% render_field form_fechadtu.aprox class="form_control" %}
+                {% else %}
+                  {% render_field form_fechadtu.aprox class="form_control" disabled="disabled" %}
+                {% endif %}
+
+                <p class="text-primary">Fecha aprox.</p>
+
+            </div>
+
+          <p class="text-primary" style="padding-top: 3%">Observaciones:</p>
+          {% if edita_construccion %}
+            {% render_field form_construccion.obs class="form-control" rows="4" %}
+          {% else %}
+            {% render_field form_construccion.obs class="form-control reducir" readonly="readonly" rows="4" %}
+          {% endif %}
+
+          {% if edita_construccion %}
+             <div style="padding-top: 3%"><button type=submit class="btn btn-portones">Guardar avance de construcción</button></div>
+          {% endif %}
+        </form>
+          </div>
+        <div class="col-sm-6">
+          <h3>Estado del expediente</h3>
+
+          <p class="text-primary">Fecha de integración de expediente:</p>
+
+          <form class="form-group" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+          <input type='hidden' value='form_edoexpediente' name='id_form'>
+          <div class=containeryo>
+
+              {% if edita_expediente %}
+                {% render_field form_fechaexp.fecha class="form-control ancho-fecha" type="date" %}
+              {% else %}
+                {% render_field form_fechaexp.fecha class="form-control ancho-fecha" type="date" readonly="readonly" %}
+              {% endif %}
+
+              <p></p>
+
+              {% if edita_expediente %}
+                {% render_field form_fechaexp.aprox class="form_control" %}
+              {% else %}
+                {% render_field form_fechaexp.aprox class="form_control" disabled="disabled" %}
+              {% endif %}
+
+              <p class="text-primary">Fecha aprox.</p>
+
+          </div>
+
+          <p class="text-primary" style="padding-top: 3%">Observaciones:</p>
+          {% if edita_expediente %}
+            {% render_field form_edoexp.obs class="form-control" rows="4" %}
+          {% else %}
+            {% render_field form_edoexp.obs class="form-control reducir" readonly="readonly" rows="4" %}
+          {% endif %}
+
+          {% if edita_expediente %}
+             <div style="padding-top: 3%"><button type=submit class="btn btn-portones">Guardar estado del expediente</button></div>
+          {% endif %}
+        </form>
+
+     <h3>Cierre de venta</h3>
+
+         <form class="form-group" method="post" enctype="multipart/form-data">
+           {% csrf_token %}
+
+          <input type='hidden' value='form_cierreventa' name='id_form'>
+
+          {% include "filetemplate.html" with nombre_archivo="comprobante de inscripción" var_edita=edita_venta form=form_inscripcion %}
+          {% include "filetemplate.html" with nombre_archivo="comprobante de instrucción" var_edita=edita_venta form=form_instruccion %}
+
+
+          <div class=containeryo>
+
+          <p class="text-primary">Fecha de firma:</p>
+
+          <p></p>
+
+          {% if edita_venta %}
+            {% render_field form_fechafirma.fecha class="form-control ancho-fecha" type="date" %}
+          {% else %}
+            {% render_field form_fechafirma.fecha class="form-control ancho-fecha" type="date" readonly="readonly" %}
+          {% endif %}
+
+          <p></p>
+
+          {% if edita_venta %}
+            {% render_field form_fechafirma.aprox class="form_control" %}
+          {% else %}
+            {% render_field form_fechafirma.aprox class="form_control" disabled="disabled" %}
+          {% endif %}
+
+          <p class="text-primary">Fecha aprox.</p>
+
+        </div>
+
+           <p class="text-primary">Observaciones:</p>
+           {% if edita_venta %}
+             {% render_field form_fin_venta.obs_fin class="form-control" rows="4" %}
+           {% else %}
+             {% render_field form_fin_venta.obs_fin class="form-control reducir" readonly="readonly" rows="4" %}
+           {% endif %}
+
+
+           {% if edita_venta %}
+              <div style="padding-top: 3%"><button type=submit class="btn btn-portones">Guardar cierre de venta</button></div>
+           {% endif %}
+          </form>
+        </div>
+     </div>
+
+      <hr>
+      <div class="row">
+        <div class="col-sm-12 panel panel-seccion">
+          <h2>Integración de Expediente</h2>
+        </div>
+      </div>
+      <div class="row">
+        <form class="form-group" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+        <input type='hidden' value='form_expediente' name='id_form'>
+        <div class="col-sm-6">
+
+          {% include "filetemplate.html" with nombre_archivo="acta de nacimiento" var_edita=edita_expediente form=form_nacimiento %}
+          {% include "filetemplate.html" with nombre_archivo="curp" var_edita=edita_expediente form=form_curp %}
+          {% include "filetemplate.html" with nombre_archivo="identificación oficial" var_edita=edita_expediente form=form_identificacion %}
+
+          {% if tiene_fovi %}
+            {% include "filetemplate.html" with nombre_archivo="formato de entidad financiera" var_edita=edita_expediente form=form_entidad %}
+            {% include "filetemplate.html" with nombre_archivo="cartas buró de crédito" var_edita=edita_expediente form=form_buro %}
+          {% endif %}
+
+        </div>
+
+        <div class="col-sm-6">
+
+          {% include "filetemplate.html" with nombre_archivo="rfc" var_edita=edita_expediente form=form_rfc %}
+          {% include "filetemplate.html" with nombre_archivo="comprobante de domicilio" var_edita=edita_expediente form=form_domicilio %}
+
+          {% if tiene_info %}
+            {% include "filetemplate.html" with nombre_archivo="manifiesto de conocimiento del inmueble" var_edita=edita_expediente form=form_conocimiento %}
+          {% endif %}
+
+          {% if tiene_fovi %}
+            {% include "filetemplate.html" with nombre_archivo="expediente único electrónico" var_edita=edita_expediente form=form_expunico %}
+            {% include "filetemplate.html" with nombre_archivo="talón de pago" var_edita=edita_expediente form=form_talon %}
+            {% include "filetemplate.html" with nombre_archivo="curso educación financiera" var_edita=edita_expediente form=form_curso %}
+          {% endif %}
+
+          {% if edita_expediente %}
+             <div style="padding-top: 3%"><button type=submit class="btn btn-portones">Guardar expediente</button></div>
+          {% endif %}
+
+        </div>
+        </form>
+      </div>
+
+      <hr>
+      <div class="row">
+        <div class="col-sm-12 panel panel-seccion">
+          <h2>Documentos de Entrega</h2>
+        </div>
+      </div>
+      <div class="row">
+        <form class="form-group" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+        <input type='hidden' value='form_entrega' name='id_form'>
+        <div class="col-sm-6">
+
+          {% include "filetemplate.html" with nombre_archivo="reglamento firmado" var_edita=edita_entrega form=form_reglamento %}
+          {% include "filetemplate.html" with nombre_archivo="aviso de privacidad" var_edita=edita_entrega form=form_privacidad %}
+          {% include "filetemplate.html" with nombre_archivo="aviso de procedencia ilícita" var_edita=edita_entrega form=form_procedencia %}
+
+        </div>
+
+        <div class="col-sm-6">
+
+          {% include "filetemplate.html" with nombre_archivo="recibo de documentación" var_edita=edita_entrega form=form_documentacion %}
+          {% include "filetemplate.html" with nombre_archivo="convenio de recepción" var_edita=edita_entrega form=form_recepcion %}
+
+          {% if edita_entrega %}
+             <div style="padding-top: 3%"><button type=submit class="btn btn-portones">Guardar documentos de entrega</button></div>
+          {% endif %}
+
+        </div>
+        </form>
+      </div>
+
+
+      <hr>
+
+      <div class="row">
+        <div id=div-ppal class="col-sm-5">
+          <div class="row">
+            <div class="col-sm-12 panel panel-seccion">
+              <h2>Saldos</h2>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <input type="text" class="form-control" style="font-weight: bold; width: 110%; background-color: #2865A8; color:#FFFFFF" value="Precio de venta:" readonly>
+            </div>
+            <div class="col-sm-6">
+              <div class=containeryo>
+                <input type="text" class="form-control" style="width: 60%" value={{precio_venta}} readonly>
+                <p></p>
+                <button onclick="agregar_ppal()" class="btn btn-primary btn-sm">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div id=templ-saldo class="row" style="padding-top:2%; display:none">
+            <div class="col-sm-6">
+              <input type="text" class="form-control" style="font-weight: bold; width: 110%; background-color: #C1DCEB" placeholder="Nombre del concepto">
+            </div>
+            <div class="col-sm-6">
+              <div class=containeryo>
+                <input onclick="sin_comas(this)" onblur="cambiar_num(this)" type="text" class="form-control" style="width: 60%" value="0.00">
+                <p></p>
+                <button onclick="agregar_secundario(this)" class="btn btn-primary btn-sm">+</button>
+                <button onclick="eliminar_actual(this)" class="btn btn-danger btn-sm">-</button>
+              </div>
+                </form>
+            </div>
+          </div>
+
+          <div id=templ-concepto class="row" style="padding-top:2%; display:none">
+            <div class="col-sm-6">
+              <input type="text" class="form-control" style="width: 110%;" placeholder="Nombre del sub-concepto">
+            </div>
+            <div class="col-sm-6">
+              <div class=containeryo>
+                <input onclick="sin_comas(this)" onblur="cambiar_num(this)" type="text" class="form-control" style="width: 60%" value="0.00">
+                <p></p>
+                <button onclick="eliminar_actual(this)" class="btn btn-danger btn-sm">-</button>
+              </div>
+                </form>
+            </div>
+          </div>
+
+          <div id="templ-total" class="row" style="padding-top:2%; display:none">
+            <div class="col-sm-6">
+              <input type="text" class="form-control" style="font-weight: bold; width: 110%" value="Sub-total:" readonly>
+            </div>
+            <div class="col-sm-6">
+              <div class=containeryo>
+                <input onclick="sin_comas(this)" onblur="cambiar_num(this)" type="text" class="form-control" style="width: 60%" value="0.00" readonly>
+              </div>
+                </form>
+            </div>
+          </div>
+
+
+          <div id="nodo-diff" class="row" style="padding-top:2%">
+            <div class="col-sm-6">
+              <input type="text" class="form-control" style="font-weight: bold; width: 110%; background-color: #CE3C3E; color:#FFFFFF" value="Diferencia:" readonly>
+            </div>
+            <div class="col-sm-6">
+              <div class=containeryo>
+                <input type="text" class="form-control" style="width: 60%" value=0 readonly>
+              </div>
+            </div>
+          </div>
+
+          <form class="form-group" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type='hidden' value='form_saldos' name='id_form'>
+            <input id=list_saldos_hidd type='hidden' value='' name='list_saldos'>
+            {% if edita_accesorios %}
+              <div style="padding-top: 5%"><button onmousedown="cadena_saldos()" type="submit" class="btn btn-portones">Guardar saldos</button></div>
+            {% endif %}
+          </form>
+
+        </div>
+
+
+         <div class="col-sm-7" style="padding-left:3%">
+          <div class="row">
+            <div class="col-sm-12 panel panel-seccion">
+              <h2>Accesorios</h2>
+            </div>
+          </div>
+          <table class="table table-bordered">
+            <thead>
+              <tr style="background-color: #E5E5E6">
+                <th class=centrar width="60%">Descripción</th>
+                <th class=centrar width="20%">Precio</th>
+                <th class=centrar width="10%">Estado</th>
+                <th class=centrar width="10%">Modif.</th>
+              </tr>
+            </thead>
+            <tr id="acces-templ" style="display: none">
+              <td class=centrar width="60%">
+                <select class="form-control" style="width: 100%" value=1 onchange="actualizar_precio_accesorio(this)">
+                  <option value="0">-- Seleccionar --</option>
+                  <option value="1">Cocina</option>
+                  <option value="2">Closet recámara principal</option>
+                  <option value="3">Closet recámara principal tipo "L"</option>
+                  <option value="4">Closet blancos recámara principal</option>
+                  <option value="5">Closet recámara P.A.</option>
+                  <option value="6">Closet recámara P.A. tipo "L"</option>
+                  <option value="7">Sala T.V. Centro de entret.</option>
+                  <option value="8">Sala T.V. Centro de entret. con mampara</option>
+                  <option value="9">Closet P.B.</option>
+                  <option value="10">Mueble de baño</option>
+                  <option value="11">Canceles de baño</option>
+                </select>
+              </td>
+              <td class=centrar width="15%">
+                <input onchange="actualizar_total_acces()" type="text" class="form-control" style="width: 100%" value="0.00" readonly>
+              </td>
+              <td class=centrar width="15%">
+                <button style="background-color: #808080; color: #808080; border-color: #808080" class="btn btn-portones btn-sm" data-trigger="hover" title="Pendiente" data-content="Límite: 22-jun">
+                  E
+                </button>
+              </td>
+              <td class=centrar width="10%">
+                <button onclick="eliminar_accesorio_actual(this)" class="btn btn-danger btn-sm">-</button>
+              </td>
+            </tr>
+
+            <tr id="acces-total">
+              <td class=centrar width="60%">
+                <input type="text" class="form-control" style="font-weight: bold; width: 100%" placeholder="Total:" readonly>
+              </td>
+              <td class=centrar width="15%">
+                <input type="text" class="form-control" style="width: 100%" value="0.00" readonly>
+              </td>
+              <td class=centrar width="15%">
+                <button style="background-color: #808080; color: #808080; border-color: #808080" class="btn btn-portones btn-sm" data-trigger="hover" title="Pendiente" data-content="Límite: 22-jun">
+                  E
+                </button>
+              </td>
+              <td class=centrar width="10%">
+                <button onclick="agregar_accesorio()" class="btn btn-info btn-sm">+</button>
+              </td>
+            </tr>
+
+          </table>
+          <form class="form-group" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type='hidden' value='form_accesorios' name='id_form'>
+            <input id=list_acces_hidd type='hidden' value='' name='list_acces'>
+            {% if edita_accesorios %}
+              <div style="padding-top: 1%"><button type="submit" class="btn btn-portones">Guardar accesorios</button></div>
+            {% endif %}
+          </form>
+
+
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-sm-12 panel panel-seccion">
+          <br><br>
+        </div>
+          </div>
+      </div>
+    </main>
+
+      <script>
+      $(document).ready(function(){
+        $('[data-trigger="hover"]').popover();
+      });
+
+      {% for accesorio_individual in accesorios %}
+      agregar_accesorio_inicial({{ accesorio_individual.tipo }});
+      {% endfor %}
+
+      {% for saldo_individual in saldos %}
+        var btn_sld_tmp = agregar_ppal_inicial("{{saldo_individual.nombre}}", "{{saldo_individual.total_inicial}}");
+        {% for subsl in subsaldos %}
+          {% for subsl_ind in subsl %}
+            {% if forloop.parentloop.counter0 == forloop.parentloop.parentloop.counter0 %}
+              agregar_secundario_inicial(btn_sld_tmp, "{{subsl_ind.nombre}}", "{{subsl_ind.monto}}");
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        actualizar_subtotal({{ forloop.counter0 }});
+      {% endfor %}
+
+
+      </script>
+
+  </body>
+</html>

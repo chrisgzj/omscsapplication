@@ -1,0 +1,495 @@
+{% extends "Base.html" %}
+{% load widget_tweaks %}
+{% block title %}Inicio{% endblock %}
+{% block main %}
+<style>
+.preciodeventa {
+  font-weight: bold;
+  width: 110%;
+  background-color: #3ds36f;
+  color:#FFFFFF;
+}
+
+.diferenciasss {
+  color:white;
+  font-weight:bold;
+}
+</style>
+ <div class="container">
+      <div class="row">
+            <div class="col-sm-5">
+                <h1 class="page-title jumbotron centrar chiquitinas">{{nombre_casa}}</h1>
+                <table class="table">
+                <tr>
+                    <th class="centrar {{color_apartado}} doscinco">Apartado</th>
+                    <th class="centrar {{color_construccion}} doscinco">Construcción</th>
+                    <th class="centrar {{color_expediente}} doscinco">Expediente</th>
+                    <th class="centrar {{color_firma}} doscinco">Firma</th>
+                </tr>
+              </table>
+            </div>
+
+        <div class="col-sm-1"></div>
+         <div class="col-sm-6" "paddingtopdos">
+           <div class="panel panel-seccion">
+             <h2 class="page title jumbotron centrar chiquitinas">Datos Generales</h2>
+           </div>
+            <p>
+               <span class="text-primary">Dúplex:</span> {{duplex}}
+               <span  class="espacios">     </span>
+               <span class="text-primary">Fachada:</span> {{fachada}}
+           </p>
+           <form class="form" method="post" enctype="multipart/form-data">
+             {% csrf_token %}
+             <input type='hidden' value='form_grales_deprecated' name='id_form'>
+             <p class="text-primary">Cliente:</p>
+             <a href="/cliente_{{nombre_casa.cliente.id}}/">{{nombre_casa.cliente}}</a>
+             <p class="text-primary paddingtopdos">Vendedor:</p>
+             <p> {{nombre_casa.vendedor}} </p>
+
+
+           </form>
+          </div>
+        </div>
+      <hr>
+    <div class="row">
+        <div class="col-sm-12 panel panel-seccion">
+          <h2 class="page title jumbotron centrar chiquitinas">Fechas y Estados</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <h3 class="page title jumbotron centrar chiquitinas">Inicio de venta</h3>
+          <form class="form-group" method="post" enctype="multipart/form-data">
+            <input type='hidden' value='form_inicioventa' name='id_form'>
+            {% csrf_token %}
+
+            {% include "filetemplate.html" with nombre_archivo="comprobante de apartado" var_edita=edita_venta form=form_apartado %}
+            {% include "filetemplate.html" with nombre_archivo="comprobante de precalificación" var_edita=edita_venta form=form_precalif %}
+
+            <p class="text-primary">Observaciones:</p>
+            {% if edita_venta %}
+              {% render_field form_ini_venta.obs_inicio class="form-control" rows="4" %}
+            {% else %}
+              {% render_field form_ini_venta.obs_inicio class="form-control reducir" readonly="readonly" rows="4" %}
+            {% endif %}
+
+            {% if edita_venta %}
+               <div class="paddingtoptres"><button type=submit class="btn btn-portones">Guardar inicio de venta</button></div>
+            {% endif %}
+
+          </form>
+
+
+          <h3 class="page title jumbotron centrar chiquitinas">Avance de construcción</h3>
+          <form class="form-group" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type='hidden' value='form_construccion' name='id_form'>
+            <p class="text-primary">Etapa actual y fecha de inicio de la etapa:</p>
+            <div class=row>
+              <div class=col-sm-5>
+            {% if edita_construccion %}
+              {% render_field form_construccion.etapa_actual class="form-control" %}
+            {% else %}
+              {% render_field form_construccion.etapa_actual class="form-control" disabled="disabled" %}
+            {% endif %}
+              </div>
+              <div class=col-sm-5>
+            {% if edita_construccion %}
+              {% render_field form_construccion.inicio_etapa type="date" class="form-control" %}
+            {% else %}
+              {% render_field form_construccion.inicio_etapa type="date" class="form-control" disabled="disabled" %}
+            {% endif %}
+              </div>
+           </div>
+
+            <p class="text-primary" "paddingtoptres">Fecha de fin de obra:</p>
+            <div class="containeryo">
+
+                {% if edita_construccion %}
+                  {% render_field form_fechafin.fecha class="form-control" style="width:60%" type="date" %}
+                {% else %}
+                  {% render_field form_fechafin.fecha class="form-control" style="width:60%" type="date" readonly="readonly" %}
+                {% endif %}
+
+                <p></p>
+
+                {% if edita_construccion %}
+                  {% render_field form_fechafin.aprox class="form_control" %}
+                {% else %}
+                  {% render_field form_fechafin.aprox class="form_control" disabled="disabled" %}
+                {% endif %}
+
+                <p class="text-primary">Fecha aprox.</p>
+
+            </div>
+
+            <p class="text-primary" "paddingtoptres">Fecha de DTU:</p>
+            <div class=containeryo>
+                {% if edita_construccion %}
+                  {% render_field form_fechadtu.fecha class="form-control" style="width:60%" type="date" %}
+                {% else %}
+                  {% render_field form_fechadtu.fecha class="form-control" style="width:60%" type="date" readonly="readonly" %}
+                {% endif %}
+
+                <p></p>
+
+                {% if edita_construccion %}
+                  {% render_field form_fechadtu.aprox class="form_control" %}
+                {% else %}
+                  {% render_field form_fechadtu.aprox class="form_control" disabled="disabled" %}
+                {% endif %}
+
+                <p class="text-primary">Fecha aprox.</p>
+
+            </div>
+
+          <p class="text-primary" "paddingtoptres">Observaciones:</p>
+          {% if edita_construccion %}
+            {% render_field form_construccion.obs class="form-control" rows="4" %}
+          {% else %}
+            {% render_field form_construccion.obs class="form-control reducir" readonly="readonly" rows="4" %}
+          {% endif %}
+
+          {% if edita_construccion %}
+             <div class= "paddingtoptres"><button type=submit class="btn btn-portones">Guardar avance de construcción</button></div>
+          {% endif %}
+        </form>
+          </div>
+        <div class="col-sm-6">
+          <h3 class="page title jumbotron centrar chiquitinas">Estado del expediente</h3>
+
+          <p class="text-primary">Fecha de integración de expediente:</p>
+
+          <form class="form-group" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+          <input type='hidden' value='form_edoexpediente' name='id_form'>
+          <div class=containeryo>
+
+              {% if edita_expediente %}
+                {% render_field form_fechaexp.fecha class="form-control" style="width:60%" type="date" %}
+              {% else %}
+                {% render_field form_fechaexp.fecha class="form-control" style="width:60%" type="date" readonly="readonly" %}
+              {% endif %}
+
+              <p></p>
+
+              {% if edita_expediente %}
+                {% render_field form_fechaexp.aprox class="form_control" %}
+              {% else %}
+                {% render_field form_fechaexp.aprox class="form_control" disabled="disabled" %}
+              {% endif %}
+
+              <p class="text-primary">Fecha aprox.</p>
+
+          </div>
+
+          <p class="text-primary paddingtoptres">Observaciones:</p>
+          {% if edita_expediente %}
+            {% render_field form_edoexp.obs class="form-control" rows="4" %}
+          {% else %}
+            {% render_field form_edoexp.obs class="form-control reducir" readonly="readonly" rows="4" %}
+          {% endif %}
+
+          {% if edita_expediente %}
+             <div class="paddingtoptres"><button type=submit class="btn btn-portones">Guardar estado del expediente</button></div>
+          {% endif %}
+        </form>
+
+     <h3 class="page title jumbotron centrar chiquitinas">Cierre de venta</h3>
+
+         <form class="form-group" method="post" enctype="multipart/form-data">
+           {% csrf_token %}
+
+          <input type='hidden' value='form_cierreventa' name='id_form'>
+
+          {% include "filetemplate.html" with nombre_archivo="comprobante de inscripción" var_edita=edita_venta form=form_inscripcion %}
+          {% include "filetemplate.html" with nombre_archivo="comprobante de instrucción" var_edita=edita_venta form=form_instruccion %}
+
+
+          <div class=containeryo>
+
+          <p class="text-primary">Fecha de firma:</p>
+
+          <p></p>
+
+          {% if edita_venta %}
+            {% render_field form_fechafirma.fecha class="form-control" style="width:60%" type="date" %}
+          {% else %}
+            {% render_field form_fechafirma.fecha class="form-control" style="width:60%" type="date" readonly="readonly" %}
+          {% endif %}
+
+          <p></p>
+
+          {% if edita_venta %}
+            {% render_field form_fechafirma.aprox class="form_control" %}
+          {% else %}
+            {% render_field form_fechafirma.aprox class="form_control" disabled="disabled" %}
+          {% endif %}
+
+          <p class="text-primary">Fecha aprox.</p>
+
+        </div>
+
+           <p class="text-primary">Observaciones:</p>
+           {% if edita_venta %}
+             {% render_field form_fin_venta.obs_fin class="form-control" rows="4" %}
+           {% else %}
+             {% render_field form_fin_venta.obs_fin class="form-control reducir" readonly="readonly" rows="4" %}
+           {% endif %}
+
+
+           {% if edita_venta %}
+              <div class= "paddingtoptres"><button type=submit class="btn btn-portones">Guardar cierre de venta</button></div>
+           {% endif %}
+          </form>
+        </div>
+     </div>
+
+      <hr>
+      <div class="row">
+        <div class="col-sm-12 panel panel-seccion">
+          <h2 class="page title jumbotron centrar chiquitinas">Integración de Expediente </h2>
+        </div>
+      </div>
+      <div class="row">
+        <form class="form-group" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+        <input type='hidden' value='form_expediente' name='id_form'>
+        <div class="col-sm-6">
+
+          {% include "filetemplate.html" with nombre_archivo="acta de nacimiento" var_edita=edita_expediente form=form_nacimiento %}
+          {% include "filetemplate.html" with nombre_archivo="curp" var_edita=edita_expediente form=form_curp %}
+          {% include "filetemplate.html" with nombre_archivo="identificación oficial" var_edita=edita_expediente form=form_identificacion %}
+
+          {% if tiene_fovi %}
+            {% include "filetemplate.html" with nombre_archivo="formato de entidad financiera" var_edita=edita_expediente form=form_entidad %}
+            {% include "filetemplate.html" with nombre_archivo="cartas buró de crédito" var_edita=edita_expediente form=form_buro %}
+          {% endif %}
+
+        </div>
+
+        <div class="col-sm-6">
+
+          {% include "filetemplate.html" with nombre_archivo="rfc" var_edita=edita_expediente form=form_rfc %}
+          {% include "filetemplate.html" with nombre_archivo="comprobante de domicilio" var_edita=edita_expediente form=form_domicilio %}
+
+          {% if tiene_info %}
+            {% include "filetemplate.html" with nombre_archivo="manifiesto de conocimiento del inmueble" var_edita=edita_expediente form=form_conocimiento %}
+          {% endif %}
+
+          {% if tiene_fovi %}
+            {% include "filetemplate.html" with nombre_archivo="expediente único electrónico" var_edita=edita_expediente form=form_expunico %}
+            {% include "filetemplate.html" with nombre_archivo="talón de pago" var_edita=edita_expediente form=form_talon %}
+            {% include "filetemplate.html" with nombre_archivo="curso educación financiera" var_edita=edita_expediente form=form_curso %}
+          {% endif %}
+
+          {% if edita_expediente %}
+             <div class="paddingtoptres"><button type=submit class="btn btn-portones">Guardar expediente</button></div>
+          {% endif %}
+
+        </div>
+        </form>
+      </div>
+
+      <hr>
+      <div class="row">
+        <div class="col-sm-12 panel panel-seccion">
+          <h2 class="page title jumbotron centrar chiquitinas">Documentos de Entrega</h2>
+        </div>
+      </div>
+      <div class="row">
+        <form class="form-group" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+        <input type='hidden' value='form_entrega' name='id_form'>
+        <div class="col-sm-6">
+
+          {% include "filetemplate.html" with nombre_archivo="reglamento firmado" var_edita=edita_entrega form=form_reglamento %}
+          {% include "filetemplate.html" with nombre_archivo="aviso de privacidad" var_edita=edita_entrega form=form_privacidad %}
+          {% include "filetemplate.html" with nombre_archivo="aviso de procedencia ilícita" var_edita=edita_entrega form=form_procedencia %}
+
+        </div>
+
+        <div class="col-sm-6">
+
+          {% include "filetemplate.html" with nombre_archivo="recibo de documentación" var_edita=edita_entrega form=form_documentacion %}
+          {% include "filetemplate.html" with nombre_archivo="convenio de recepción" var_edita=edita_entrega form=form_recepcion %}
+
+          {% if edita_entrega %}
+             <div class="paddingtoptres"><button type=submit class="btn btn-portones">Guardar documentos de entrega</button></div>
+          {% endif %}
+
+        </div>
+        </form>
+      </div>
+
+
+      <hr>
+
+      <div class="row">
+        <div id=div-ppal class="col-sm-5">
+          <div class="row">
+            <div class="col-sm-12 panel panel-seccion">
+              <h2 class="page title jumbotron centrar chiquitinas">Saldos</h2>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <input type="text" class="form-control preciodeventa" value="Precio de venta:" style="background-color: #2865A8" readonly>
+            </div>
+            <div class="col-sm-6">
+              <div class=containeryo>
+                <input type="text" class="form-control widthsesenta" value={{precio_venta}} readonly>
+                <p></p>
+                <button id=add-ppal onclick="agregar_ppal()" class="btn btn-primary btn-sm">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div id=templ-saldo class="row paddingtopdos">
+            <div id=pr1 class="col-sm-6">
+              <input id="pr" type="text" class="form-control nombredelconcepto" placeholder="Nombre del concepto">
+            </div>
+            <div class="col-sm-6">
+              <div class=containeryo>
+                <input onclick="sin_comas(this)" onblur="cambiar_num(this)" type="text" class="form-control widthsesenta"  value="0.00">
+                <p></p>
+                <button onclick="agregar_secundario(this)" class="btn btn-primary btn-sm">+</button>
+                <button onclick="eliminar_actual(this)" class="btn btn-danger btn-sm">-</button>
+              </div>
+            </div>
+          </div>
+
+          <div id=templ-concepto class="row paddingtopdos" ; display:"none">
+            <div class="col-sm-6">
+              <input type="text" class="form-control widthcientodiez" placeholder="Nombre del sub-concepto">
+            </div>
+            <div class="col-sm-6">
+              <div class=containeryo>
+                <input onclick="sin_comas(this)" onblur="cambiar_num(this)" type="text" class="form-control widthsesenta" value="0.00">
+                <p></p>
+                <button onclick="eliminar_actual(this)" class="btn btn-danger btn-sm">-</button>
+              </div>
+                </form>
+            </div>
+          </div>
+
+          <div id="templ-total" class="row paddingtopdos"; display:"none">
+            <div class="col-sm-6">
+              <input type="text" class="form-control subtotal" value="Sub-total:" readonly>
+            </div>
+            <div class="col-sm-6">
+              <div class=containeryo>
+                <input onclick="sin_comas(this)" onblur="cambiar_num(this)" type="text" class="form-control widthseseta" value="0.00" readonly>
+              </div>
+                </form>
+            </div>
+          </div>
+
+
+          <div id="nodo-diff" class="row paddingtopdos">
+            <div class="col-sm-6">
+              <input type="text" class="diferenciasss form-control" style="background-color: #CE3C3E"  value= "Diferencia:"readonly>
+            </div>
+            <div class="col-sm-6">
+              <div class=containeryo>
+                <input type="text" class="form-control widthseseta" value=0 readonly>
+              </div>
+            </div>
+          </div>
+
+          <form class="form-group" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type='hidden' value='form_saldos' name='id_form'>
+            <input id=list_saldos_hidd type='hidden' value='' name='list_saldos'>
+            {% if edita_accesorios %}
+            <div class="paddingtopcinco boldfon"><button onmousedown="cadena_saldos()" type="submit" class="btn btn-portones">Guardar saldos</button></div>
+            {% endif %}
+          </form>
+
+        </div>
+
+
+         <div class="col-sm-7 paddinglefttres">
+          <div class="row">
+            <div class="col-sm-12 panel panel-seccion">
+              <h2 class="page title jumbotron centrar chiquitinas" >Accesorios</h2>
+            </div>
+          </div>
+          <table class="table table-bordered">
+            <thead>
+              <tr class= "backgroundtable">
+                <th class="centrar widthsesenta">Descripción</th>
+                <th class="centrar widthveinte">Precio</th>
+                <th class="centrar widthdiez">Estado</th>
+                <th class="centrar widthdiez">Modif.</th>
+              </tr>
+            </thead>
+            <tr id="acces-templ" class="nodisplay">
+              <td class="centrar widthsesenta">
+                <select class="form-control widthcien" value=1 onchange="actualizar_precio_accesorio(this)">
+                  <option value="0">-- Seleccionar --</option>
+                  <option value="1">Cocina</option>
+                  <option value="2">Closet recámara principal</option>
+                  <option value="3">Closet recámara principal tipo "L"</option>
+                  <option value="4">Closet blancos recámara principal</option>
+                  <option value="5">Closet recámara P.A.</option>
+                  <option value="6">Closet recámara P.A. tipo "L"</option>
+                  <option value="7">Sala T.V. Centro de entret.</option>
+                  <option value="8">Sala T.V. Centro de entret. con mampara</option>
+                  <option value="9">Closet P.B.</option>
+                  <option value="10">Mueble de baño</option>
+                  <option value="11">Canceles de baño</option>
+                </select>
+              </td>
+              <td class=centrar width="15%">
+                <input onchange="actualizar_total_acces()" type="text" class="form-control widthcien" value="0.00" readonly>
+              </td>
+              <td class=centrar width="15%">
+                <button class="btn btn-portones btn-sm botongris" data-trigger="hover" title="Pendiente" data-content="Límite: 22-jun">
+                  E
+                </button>
+              </td>
+              <td class="centrar widthdiez">
+                <button onclick="eliminar_accesorio_actual(this)" class="btn btn-danger btn-sm">-</button>
+              </td>
+            </tr>
+
+            <tr id="acces-total">
+              <td class=centrar widthsesenta>
+                <input type="text" class="form-control total" "widthcien" placeholder="Total:" readonly>
+              </td>
+              <td class=centrar width="15%">
+                <input type="text" class="form-control" "widthcien" value="0.00" readonly>
+              </td>
+              <td class="centrar widthquince">
+                <button  class="btn btn-portones btn-sm botongris" data-trigger="hover" title="Pendiente" data-content="Límite: 22-jun">
+                </button>
+              </td>
+              <td class=centrar width="10%">
+                <button onclick="agregar_accesorio()" class="btn btn-info btn-sm">+</button>
+              </td>
+            </tr>
+
+          </table>
+          <form class="form-group" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type='hidden' value='form_accesorios' name='id_form'>
+            <input id=list_acces_hidd type='hidden' value='' name='list_acces'>
+            {% if edita_accesorios %}
+              <div class="paddingtopuno"><button type="submit" class="btn btn-portones">Guardar accesorios</button></div>
+            {% endif %}
+          </form>
+
+
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-sm-12 panel panel-seccion">
+          <br><br>
+        </div>
+          </div>
+      </div>
+    {% endblock %}

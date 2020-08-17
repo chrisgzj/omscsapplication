@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/media/static/cliente.css">
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js";
+    var nodos_saldos = [];
+    var precio_venta_original = 720000; //Conectar con algo.
+    var precios_accesorios = ["0.00","38,000.00","12,000.00","13,000.00","8,500.00","12,000.00","14,000.00", "8,500.00", "10,500.00", "11,500.00", "8,500.00", "19,000.00"];
+
+    function toggle_fechavisita(){
+      var drop_tipo = document.querySelector('#id-tipoactualizacion');
+      var fecha_vis = document.querySelector('#id-fechavisita');
+      if (drop_tipo.options[drop_tipo.selectedIndex].text == "Visita"){
+        fecha_vis.removeAttribute('readonly');}
+      else{
+        fecha_vis.value = null;
+        fecha_vis.setAttribute('readonly', 'readonly');}
+    }
+
+    function extraer_num(div_padre_extraer){ //OK
+      var num_temp = div_padre_extraer.children[1].children[0].value;
+      num_temp = num_temp.replace(/[, ]+/g, "").trim();
+      return parseInt(num_temp);
+    }
+
+    function actualizar_subtotal(num_id){
+      var presente = document.querySelector('#id-totsl-' + num_id);
+      if (presente){
+        var considerar = false;
+        var subtotal = 0;
+        var div_ppal = document.querySelector('#div-ppal');
+        for (var i = 0; i < div_ppal.children[0].children.length; i++){
+          var id_tmp = div_ppal.children[0].children[i].id;
+          if (id_tmp == "idsaldos-" + num_id)
+            considerar = true;
+          if (id_tmp == "id-totsl-" + num_id)
+            considerar = false;
+          if (considerar)
+            subtotal = subtotal + extraer_num(div_ppal.children[0].children[i]);
+        }
+        var div_llenar = document.querySelector('#id-totsl-' + num_id);
+        div_llenar.children[1].children[0].value = numberWithCommas(subtotal.toString());
+      }
+    }
+
+    function extraer_subsaldos(div_ini){
+      var div_ppal = document.querySelector('#div-ppal').children[0];
+      var ls_subs = [];
+      var nom_tmp_sub, val_tmp_sub, obj_tmp_sub;
+      while (div_ini < div_ppal.children.length && div_ppal.children[div_ini].id.includes("id-subsl")){
+        nom_tmp_sub = div_ppal.children[div_ini].children[0].children[0].value;
+        val_tmp_sub = extraer_num(div_ppal.children[div_ini]);
+          if (nom_tmp_sub != "" && val_tmp_sub != 0){
+            obj_tmp_sub = {};
+            obj_tmp_sub.concepto = nom_tmp_sub;
+            obj_tmp_sub.monto = val_tmp_sub;
+            ls_subs.push(obj_tmp_sub);
+          }
+          div_ini++;
+        }
+      return ls_subs;
+    }
+
+    function cadena_saldos(){
+      var div_ppal = document.querySelector('#div-ppal').children[0];
+      var saldos_json = [];
+      var cont_subs = 1;
+      var obj_tmp, nom_tmp, val_tmp, ls_subs;
+      for (var i = 0; i < div_ppal.children.length; i++){
+        var id_tmp = div_ppal.children[i].id;
+        if (id_tmp.includes("idsaldos")){
+          nom_tmp = div_ppal.children[i].children[0].children[0].value;
+          val_tmp = extraer_num(div_ppal.children[i]);
+          if (nom_tmp != "" && val_tmp != 0){
+            obj_tmp = {};
+            obj_tmp.concepto = nom_tmp;
+            obj_tmp.monto = val_tmp;
+            if (i + 1 < div_ppal.children.length && div_ppal.children[i+1].id.includes("id-subsl"))
+              obj_tmp.subsaldos = extraer_subsaldos(i+1);
+            saldos_json.push(obj_tmp);
+          }
+        }
+      }
+      document.querySelector('#list_saldos_hidd').value = JSON.stringify(saldos_json);
+    }
+
+    function actualizar_diferencia(){ //OK
+      var div_ppal = document.querySelector('#div-ppal');
+      var diferencia = 0;
+      for (var i = 0; i < div_ppal.children[0].children.length; i++){
+        var id_tmp = div_ppal.children[0].children[i].id;
+        if (id_tmp.includes("idsaldos") || id_tmp.includes("id-subsl")){
+          diferencia = diferencia + extraer_num(div_ppal.children[0].children[i]);
+        }
+      }
+      diferencia = diferencia - precio_venta_original;
+      var div_dif = document.querySelector('#nodo-diff');
+      div_dif.children[1].children[0].value = numberWithCommas(diferencia.toString());
+      if (diferencia == 0)
+        div_dif.style = "display:none";
+      else
+        div_dif.style = "padding-top:2%";
+      cadena_saldos();
+    }
+
+    function numberWithCommas(x) {
+        if (x != 0){
+          x = x.replace(/[^0-9.,-]+/g,"");
+          x = x.replace(/[, ]+/g, "").trim();
+          var parts = x.toString().split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          if (parts.length == 1)
+            parts[1] = "00";
+          return parts.join(".");
+        }else{
+          return "0.00";
+        }
+    }
+
+    function cambiar_num(campo){
+      var string_temp = campo.value.replace(/[^0-9.,-]+/g,"");
+      if (string_temp != "")
+        campo.value = numberWithCommas(campo.value);
+      else
+        campo.value = "0.00";
+      actualizar_diferencia();
+      var id_padre = campo.parentElement.parentElement.id;
+      id_padre_num = parseInt(id_padre.substring(9,100));
+      actualizar_subtotal(id_padre_num);
+    }
+
+    function sin_comas(campo){
+      campo.value = campo.value.replace(/[, ]+/g, "").trim();
+    }
+
+    function agregar_ppal() { //OK
+      var btn_nothing = agregar_ppal_inicial("",0);
+      return false;
+    }
+
+    function agregar_ppal_inicial(concepto, monto){ //OK
+      const nvo = document.querySelector('#templ-saldo').cloneNode(true);
+      var id_actual = nodos_saldos.length;
+      nvo.setAttribute('id', 'idsaldos-' + id_actual);
+      nvo.style = "padding-top:2%";
+      nvo.children[0].children[0].value = concepto;
+      nvo.children[1].children[0].value = numberWithCommas(monto);
+      var nodo_diff = document.querySelector('#nodo-diff');
+      var lista_nodos = document.querySelector('#div-ppal').children[0]; //Porque la tabla tiene un child intermedio que es tbody.
+      lista_nodos.insertBefore(nvo, nodo_diff);
+      nva_lista = [];
+      nva_lista.push(id_actual);
+      nodos_saldos.push(nva_lista);
+      return nvo.children[3].children[0];
+    }
+
+    function agregar_secundario(btn){ //OK
+      agregar_secundario_inicial(btn, "", 0);
+      return false;
+    }
+
+    function agregar_secundario_inicial(btn, concepto, monto){ //OK
+      var nodo_parent = btn.parentElement.parentElement;
+      var id_padre = parseInt(nodo_parent.id.substring(9,100));
+      var list_padre = nodos_saldos[id_padre];
+      list_padre.push(1);
+      const nvo = document.querySelector('#templ-concepto').cloneNode(true);
+      nvo.setAttribute('id', "id-subsl-" + id_padre); //Probablemente valdría la pena un id único.
+      nvo.style = "padding-top:2%";
+      nvo.children[0].children[0].value = concepto;
+      nvo.children[1].children[0].value = numberWithCommas(monto);
+      var nodo_saldo = document.querySelector('#id-totsl-' + id_padre);
+      if (nodo_saldo)
+          nodo_parent.parentElement.insertBefore(nvo, nodo_saldo);
+      else
+        nodo_parent.parentElement.insertBefore(nvo, nodo_parent.nextSibling);
+      if (list_padre.length == 2){
+        const nvo_total = document.querySelector('#templ-total').cloneNode(true);
+        nvo_total.setAttribute('id', "id-totsl-" + id_padre);
+        nodo_parent.parentElement.insertBefore(nvo_total, nvo.nextSibling);
+        nvo_total.style = "padding-top:2%";
+        nodo_parent.children[0].children[0].style = "background-color: #C1DCEB";
+        nodo_parent.children[3].children[0].disabled = "disabled";
+      }
+      return false;
+    }
+
+    function eliminar_actual(btn){ //OK
+      var div_delete = btn.parentElement.parentElement;
+      var div_idnum = parseInt(div_delete.id.substring(9,100));
+      if (div_delete.id.includes("idsaldos")){
+        nodos_saldos[div_idnum] = [];
+      }
+      if (div_delete.id.includes("id-subsl")){
+        nodos_saldos[div_idnum].pop();
+        if (nodos_saldos[div_idnum].length == 1){
+          var por_del = document.querySelector('#id-totsl-' + div_idnum);
+          por_del.remove();
+          var por_rest = document.querySelector('#idsaldos-' + div_idnum);
+          por_rest.children[0].children[0].style = "font-weight:bold; background-color: #C1DCEB";
+          por_rest.children[3].children[0].removeAttribute("disabled");
+        }
+      }
+      div_delete.remove();
+      actualizar_diferencia();
+      actualizar_subtotal(div_idnum);
+    }
+
+    function agregar_accesorio(){
+      const nvo = document.querySelector('#acces-templ').cloneNode(true);
+      nvo.setAttribute('id', "id-acces"); //Probablemente valdría la pena un id único.
+      nvo.setAttribute('class', "");
+      var total_acces = document.querySelector('#acces-total')
+      total_acces.parentElement.insertBefore(nvo, total_acces);
+      return false;
+    }
+
+    function agregar_accesorio_inicial(val_ini){
+      const nvo = document.querySelector('#acces-templ').cloneNode(true);
+      nvo.setAttribute('id', "id-acces"); //Probablemente valdría la pena un id único.
+      nvo.style = "";
+      nvo.children[0].children[0].value = val_ini;
+      var total_acces = document.querySelector('#acces-total')
+      total_acces.parentElement.insertBefore(nvo, total_acces);
+      $('[data-trigger="hover"]').popover();
+      actualizar_precio_accesorio(nvo.children[0].children[0]);
+      return false;
+    }
+
+    function eliminar_accesorio_actual(btn){
+      btn.parentElement.parentElement.remove();
+      actualizar_total_acces();
+      return false;
+    }
+
+    function actualizar_total_acces(){
+      var elem_precios = document.querySelectorAll('#id-acces');
+      var total_accesorios = 0;
+      var list_accesorios = "";
+      var costo_temp;
+      for (var i=0; i<elem_precios.length; i++){
+        costo_temp = elem_precios[i].children[1].children[0].value;
+        costo_temp = costo_temp.replace(/[, ]+/g, "").trim();
+        total_accesorios = total_accesorios + parseInt(costo_temp);
+        list_accesorios = list_accesorios + elem_precios[i].children[0].children[0].value + "/";
+      }
+      document.querySelector('#acces-total').children[1].children[0].value = numberWithCommas(total_accesorios.toString());
+      document.querySelector('#list_acces_hidd').value = list_accesorios;
+      return false;
+    }
+
+    function actualizar_precio_accesorio(selectwidg){
+      var precio_add = precios_accesorios[parseInt(selectwidg.value)];
+      selectwidg.parentElement.parentElement.children[1].children[0].value = precio_add;
+      actualizar_total_acces();
+      return false;
+    }
+
+    $(window).bind("load", function() {actualizar_diferencia()});
+
+    </script>
+
+
+  </head>
+  <body>
+    <header>
+    <div class="navbar">
+    <ul>
+        <li class="portones"><a href="{% url 'casadefault' %}">PORTONES</a></li>
+        <li><a href=""> Clientes </a>
+          <ul class="widthcientodiez">
+              <li> <a href="{% url 'altacliente' %}">Alta</a></li>
+              <li> <a href="/listaclientes/">Modificación</a></li>
+         </ul>
+        <li><a href=""> Calles </a>
+            <ul class="widthcientotreinta">
+              <li> <a href="/casas_Cipreses/">Cipreses</a></li>
+              <li> <a href="/casas_Cedros/">Cedros</a></li>
+              <li> <a href="/casas_Jacarandas/">Jacarandas</a></li>
+              <li> <a href="/casas_Orquideas/">Orquídeas</a></li>
+              <li> <a href="/casas_Laureles/">Laureles</a></li>
+              <li> <a href="/casas_Magnolias/">Magnolias</a></li>
+              <li> <a href="/casas_Palmas/">Palmas</a></li>
+           </ul>
+        </li>
+        <li><a href=""> Estados </a>
+            <ul class="widthcientotreinta">
+              <li> <a href="/estado_Todas/">Todas</a></li>
+              <li> <a href="/estado_Escrituradas/">Escrituradas</a></li>
+              <li> <a href="/estado_Disponibles/">Disponibles</a></li>
+              <li> <a href="/estado_Pendientes/">En Proceso</a></li>
+           </ul>
+        </li>
+        <li><a href="#">     </a></li>
+        <li><a href="#"> {{usuario}} </a>
+          <ul class="widthcientotreinta">
+            <li> <a href="#">Dashboard</a></li>
+            <li> <a href="/logout/">Cerrar sesión</a></li>
+         </ul>
+        </li>
+        <li>
+          <img src="https://storage.googleapis.com/ventasportones-261716.appspot.com/static/Iconos/portones_inv.png" alt="Logo Port" height=60 width=80>
+        </li>
+
+    </ul>
+    </div>
+    </header>
+
+<main>
+{% block main %}
+{% endblock %}
+</main>
+<script>
+$(document).ready(function(){
+  $('[data-trigger="hover"]').popover();
+});
+
+{% for accesorio_individual in accesorios %}
+agregar_accesorio_inicial({{ accesorio_individual.tipo }});
+{% endfor %}
+
+{% for saldo_individual in saldos %}
+  var btn_sld_tmp = agregar_ppal_inicial("{{saldo_individual.nombre}}", "{{saldo_individual.total_inicial}}");
+  {% for subsl in subsaldos %}
+    {% for subsl_ind in subsl %}
+      {% if forloop.parentloop.counter0 == forloop.parentloop.parentloop.counter0 %}
+        agregar_secundario_inicial(btn_sld_tmp, "{{subsl_ind.nombre}}", "{{subsl_ind.monto}}");
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  actualizar_subtotal({{ forloop.counter0 }});
+{% endfor %}
+
+
+</script>
+
+</body>
+</html>

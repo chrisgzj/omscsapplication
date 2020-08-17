@@ -1,0 +1,143 @@
+{% extends "Base.html" %}
+{% load widget_tweaks %}
+{% block title %}Formulario compradores{% endblock %}
+{% block main %}
+
+    <main>
+    <form class="form" method="post" enctype="multipart/form-data" onsubmit="return revisar_minimos()">
+      {% csrf_token %}
+    <div class="container">
+    <h1 class="page-title jumbotron centrar" style="font-variant:small-caps">Datos generales</h1>
+    <input type='hidden' value='form_datoscliente' name='id_form'>
+    {% if casa %}
+    <div class=row style="padding-top:-10%; padding-bottom:3%">
+      <h4>Casa: <a href="/{{casa.casa_id}}">{{casa}}</a></h4>
+    </div>
+    {% endif %}
+    <table class="table" style="width:100%">
+        <tr>
+            <td>Nombre*</td>
+            <td>{% render_field cliente_form.nombre class="form-control" %}</td>
+            <td>Apellido*</td>
+            <td>{% render_field cliente_form.apellido class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Fecha de nacimiento*</td>
+            <td>{% render_field cliente_form.fecha_nac type="date" class="form-control" %}</td>
+            <td>Tipo de crédito*</td>
+            <td>{% render_field cliente_form.tipo_credito class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>CURP</td>
+            <td>{% render_field cliente_form.curp id="id-curp" class="form-control" %}</td>
+            <td>NSS</td>
+            <td>{% render_field cliente_form.nss id="id-nss" class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Medio de contacto</td>
+            <td>{% render_field cliente_form.medio_contacto class="form-control" %}</td>
+            <td>Vendedor*</td>
+            <td>{% render_field cliente_form.vendedor class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Teléfono fijo</td>
+            <td>{% render_field cliente_form.tel_fijo id="id-telfijo" class="form-control" %}</td>
+            <td>Teléfono celular</td>
+            <td>{% render_field cliente_form.tel_celular id="id-telcel" class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Correo electrónico</td>
+            <td>{% render_field cliente_form.correo class="form-control" %}</td>
+            <td>Grado máximo de estudios</td>
+            <td>{% render_field cliente_form.grado_estudios class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Nombre de la empresa</td>
+            <td>{% render_field cliente_form.nombre_empresa class="form-control" %}</td>
+            <td>Número de registro patronal</td>
+            <td>{% render_field cliente_form.reg_patronal class="form-control" %}</td>
+        </tr>
+    </table>
+    </div>
+
+    <div class="container">
+    <h2 class="page-title jumbotron centrar" style="font-variant:small-caps">Referencias personales</h2>
+    <table class="table">
+        <tr>
+            <td class=contacto>
+            Primer contacto
+            </td>
+        </tr>
+        <tr>
+            <td>Nombre completo</td>
+            <td>{% render_field ref1_form.nombre_completo class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Parentesco</td>
+            <td>{% render_field ref1_form.parentesco class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Teléfono fijo</td>
+            <td>{% render_field ref1_form.tel_fijo class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Teléfono celular</td>
+            <td>{% render_field ref1_form.tel_celular class="form-control" %}</td>
+        </tr>
+    </table>
+
+    <table class="table">
+        <tr>
+            <td class=contacto>
+            Segundo contacto
+            </td>
+        </tr>
+        <tr>
+            <td>Nombre completo</td>
+            <td>{% render_field ref2_form.nombre_completo class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Parentesco</td>
+            <td>{% render_field ref2_form.parentesco class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Teléfono fijo</td>
+            <td>{% render_field ref2_form.tel_fijo class="form-control" %}</td>
+        </tr>
+        <tr>
+            <td>Teléfono celular</td>
+            <td>{% render_field ref2_form.tel_celular class="form-control" %}</td>
+        </tr>
+    </table>
+    <div style="padding-top: 3%"><button type=submit class="btn btn-primary">Guardar</button></div>
+    </div>
+  </form>
+    <hr>
+
+    {% if mostrar_botones %}
+<div class=container>
+    <div class=row>
+      <div class=col-sm-7>
+      </div>
+      <div class="col-sm-5 containeryo">
+      <form class="form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type='hidden' value='form_botonactualizacion' name='id_form'>
+        <input type='hidden' value='{{cliente.id}}' name='idcliente'>
+        <button type=submit class="btn btn-info">Actualización</button>
+      </form>
+      <form class="form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type='hidden' value='form_botonactualizacionlista' name='id_form'>
+        <input type='hidden' value='{{cliente.id}}' name='idcliente'>
+        <button type=submit class="btn btn-info">Ver actualizaciones</button>
+      </form>
+      </div>
+    </div>
+    <hr>
+  </div>
+
+    {% endif %}
+
+    </main>
+{% endblock %}

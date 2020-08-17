@@ -1,0 +1,29 @@
+{% extends "Base.html" %}
+{% block title %} Casas {% endblock %}
+{% block main %}
+    <div class="container">
+    <h1 class="page-title jumbotron centrar" style="font-variant:small-caps">{{nom_titulo}}</h1>
+
+    <table class="table" style="width:100%">
+        <tr>
+            <th>Calle y número</th>
+            <th>Duplex</th>
+            <th>Fachada</th>
+            <th style="width:40%">Cliente</th>
+        </tr>
+        {% for casa in casas %}
+        <tr>
+            <td><a href="/{{casa.casa_id}}">{{casa.calle}} {{casa.numero}}</a></td>
+            <td>{{casa.duplex}}</td>
+            <td>{{casa.duplex.fachada}}</td>
+            {% if casa.cliente %}
+              <td><a href="/cliente_{{casa.cliente.id}}/">{{casa.cliente}}</a></td>
+            {% else %}
+              <td>-</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+
+    </table>
+    </div>
+    {% endblock %}

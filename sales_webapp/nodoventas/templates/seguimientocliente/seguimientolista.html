@@ -1,0 +1,30 @@
+{% extends "Base.html" %}
+{% load widget_tweaks %}
+{% block title %}Visitas{% endblock %}
+
+{% block main %}
+<div class= "col-sm-5" style= "margin-left:30%">
+  <h1 class="page-title jumbotron centrar chiquitinas">Actualizaciones</h1>
+</div>
+<div class="col-sm-9 TablaObservaciones" style="margin-left:12%">
+<table class="table">
+  <tr>
+      <th>Nombre de cliente</th>
+      <th>Fecha de registro</th>
+      <th>Tipo de actualización</th>
+      <th>Fecha de visita</th>
+      <th>Observaciones</th>
+  </tr>
+  {% for actualizacion in actualizaciones %}
+  <tr>
+      <td>{{actualizacion.cliente}}</td>
+      <td>{{actualizacion.fecha}}</td>
+      <td>{{actualizacion.tipo}}</td>
+      <td>{{actualizacion.fecha_visita}}</td>
+      <td>{{actualizacion.descripcion}}</td>
+  </tr>
+{% endfor %}
+
+</table>
+</div>
+    {% endblock %}

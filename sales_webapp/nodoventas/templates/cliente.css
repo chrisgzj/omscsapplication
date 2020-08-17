@@ -1,0 +1,292 @@
+@charset "UTF-8";
+/*Documento CSS*/
+
+@media all and (max-width:750px){
+  .condicional{
+    margin-left:25%;
+  }
+}
+@media all and (min-width:900px){
+  .condicional{
+    margin-left:-20%;
+  }
+}
+
+  .alinear{
+    text-align: left;
+  }
+  .centrar{
+    text-align: center;
+  }
+  .enlinea{
+    display: inline-block;
+    vertical-align: top;
+  }
+  .espacios{
+    white-space: pre;
+  }
+  .panel-seccion {
+  text-align: center;
+  padding-bottom: 1%;
+  font-variant: small-caps}
+  .form-control{
+    width: 75%
+  }
+  .ancho-fecha{
+    width: 30%;
+  }
+  .btn-centrar{
+    padding-top: 2%;
+    padding-left: 0%;
+  }
+  .containeryo{
+      display: inline-block;
+  }
+ .popover-title {
+   background-color:#808080;
+   color: #FFFFFF;
+   font-size: 16px;
+   text-align:center;
+ }
+ .popover-content {
+   padding: 10px;
+   font-size: 12px;
+   font-weight: bold;
+ }
+
+ .contacto{
+ font-size:15pt;
+ font-weight: bold;
+ }
+
+ .navbar{
+     width:100%;
+     background:#184626;
+     font-weight:300;
+     z-index: 9999;
+ }
+
+
+ .btn-portones{
+     background: #2C7845;
+     color: white
+ }
+
+ .text-primary{
+     color: #2C7845;
+ }
+
+ /*Del documento*/
+  .widthcientotreinta {
+    width:130%;
+  }
+
+  .paddingtopcinco {
+    padding-top:5%;
+  }
+
+  .paddinglefttres{
+    padding-left: 3%;
+  }
+  /*SeguimientoCliente*/
+  .tableseg {
+    height:80%;
+    width:90%;
+    margin-left:15%;
+    margin-top:5%;
+  }
+
+  .botonfinalseg{
+    margin-left:85%;
+    margin-top:8%;
+  }
+
+  .actualfila {
+    height:100px;
+  }
+  /*Visitas*/
+
+  .bold{
+    font-weight: 600;
+  }
+
+  #TablaActualizacion {
+    margin-left: 10%;
+    width:80%;
+  }
+
+  .yupi {
+    width:90%;
+    margin-left:5%;
+  }
+  /*Altacliente*/
+  #botonesfinal{
+    margin-left:65%;
+    margin-bottom:2%;
+  }
+
+  .botonverde {
+    background-color:#184626;
+    font-weight: 300;
+    font-size:12pt;
+  }
+ header ul{
+ text-align: left;
+ display:inline;
+ margin:0;
+ padding:0;
+ list-style:none;}
+
+ header ul li{
+ font:bold 12px;
+ display: inline-block;
+ position: relative;
+ padding: 25px 20px;
+ background: #184626;
+ }
+
+ header ul li a{
+ text-decoration: none;
+ padding: 25px 20px;
+ color:white;
+ font-size:16px;
+ }
+
+ header ul li a:hover {
+ background:#eeeded;
+ color:#184626;
+ text-decoration: none;
+
+ }
+
+ header ul li ul{
+ padding:0;
+ position: absolute;
+ top:70px;
+ left:0;
+ width:250px;
+ display:none;
+ }
+
+ header ul li:hover ul, header ul li ul:hover{
+ display:block;
+
+ }
+ header ul li ul li{
+ background: #184626;
+ display: block;
+ }
+
+ header ul li ul li:hover {
+ background:#eeeded;
+
+ }
+
+ header ul li:hover ul{
+ display:block;
+ opacity:1;
+ visibility:visible;
+ }
+
+ header ul ul li:hover li {
+ display:block;
+ }
+
+ .portones {
+ font-weight:500;
+ font-size: 18px;
+ }
+
+.chiquitinas {
+font-variant:small-caps;
+}
+
+.doscinco {
+width=25%;
+}
+
+.paddingtopdos {
+    padding-top: 2%;
+}
+
+.paddingtoptres {
+    padding-top:3%;
+}
+
+ .preciodeventa {
+    font-weight: bold;
+    width: 110%;
+    background-color: #2865A8;
+    color:#FFFFFF
+}
+.diferenciasss {
+    width:110%;
+    background-color: #CE3C3E;
+    color:#FFFFFF;
+}
+
+.boldfont {
+    font-weight:bold;
+}
+.widthsesenta {
+    width= 60%;
+}
+
+.nombredelconcepto {
+    font-weight:bold;
+    width:110%;
+    background-color:#C1DCEB;
+}
+.widthcientodiez {
+    width: 110%;
+}
+
+.widthveinte {
+    width:20%;
+}
+
+.widthquince {
+    width:15%;
+}
+.widthdiez {
+    width:10%;
+}
+
+.widthcien {
+    width:100%;
+}
+
+.paddingtopuno {
+    padding-top:1%;
+}
+.subtotal {
+    font-weight: bold;
+    width: 110%;
+}
+
+
+.backgroundtable {
+    background-color:#E5E5E6;
+}
+
+.nodisplay {
+    display:none;
+
+}
+
+.botongris {
+    background-color:#808080;
+    color: #808080;
+    border-color: #808080;
+}
+
+.total {
+    font-weight:bold;
+    width: 100%;
+}
+ table tr th:nth-child(4) {
+  width:40%;
+}
+.table{
+    table-layout:fixed;
+}

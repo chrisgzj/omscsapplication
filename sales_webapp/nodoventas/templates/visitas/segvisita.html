@@ -1,0 +1,46 @@
+{% extends "Base.html" %}
+  {% load widget_tweaks %}
+{% block title %}Visitas{% endblock %}
+
+{% block main %}
+<div class= "col-sm-5" style= "margin-left:30%">
+  <h1 class="page-title jumbotron centrar chiquitinas">Visualización de visitas</h1>
+</div>
+<div class="col-sm-9 TablaObservaciones" style="margin-left:12%">
+<table class="table">
+  <tr>
+      <th>Nombre de cliente</th>
+      <th>Vendedor</th>
+      <th>Fecha de visita</th>
+      <th>Observaciones</th>
+  </tr>
+  <tr>
+      <td>Raissa González</td>
+      <td>Vielha García</td>
+      <td>30 de septiembre de 2019</td>
+      <td>Es una perra</td>
+  </tr>
+  <tr>
+      <td>Raissa González</td>
+      <td>Vielha García </td>
+      <td>2 de octubre de 2019</td>
+      <td>Gran olfato, poco sentido común</td>
+  </tr>
+  <tr>
+      <td>Raissa González</td>
+      <td>Vielha García </td>
+      <td>6 de noviembre de 2019</td>
+      <td>Aparente amante de hacer pipí en lugares que hagan enojar a Miss Gaby.
+        Se recomienda ampliamente tener especial cuidado cuando se emocione
+        demasiado.
+      </td>
+  </tr>
+  <tr>
+      <td>Raissa González</td>
+      <td>Vielha García </td>
+      <td>9 de diciembre de 2019</td>
+      <td>Como adelanto, me dio su peso en croquetas</td>
+  </tr>
+
+</table>
+ {% endblock %}

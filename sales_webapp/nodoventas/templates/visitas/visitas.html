@@ -1,0 +1,30 @@
+  {% extends "Base.html" %}
+  {% load widget_tweaks %}
+  {% block title %}Visitas{% endblock %}
+
+  {% block main %}
+
+      <h1 class="page-title jumbotron centrar chiquitinas yupi"> Visitas </h1>
+
+      <table class="table tablevisitas">
+          <tr>
+            <th>Nombre cliente</th>
+            <td>Paty Puertas </td>
+         </tr>
+        <tr>
+          <th>Vendedor</th>
+          <td>Chris Paredes</td>
+        </tr>
+        <tr>
+          <th>Fecha visita</th>
+          <td><input type="date" name="Fecha visita" class="form-control"></input></td>
+        <tr>
+          <th>Observaciones</th>
+          <td><input class="form-control" type="textarea" rows="8" cols="80"></input></td>
+        </tr>
+      </table>
+
+      <div class="botonfinalseg">
+      <a class="btn btn-primary botonverde" href="#">Guardar</a>
+      </div>
+   {% endblock %}

@@ -1,0 +1,10 @@
+{% extends "Base.html" %}
+{% block title %}Error{% endblock %}
+{% block main %}
+    <div class="container">
+    <h1 class="page-title jumbotron centrar" "chiquitinas" Error: la operación no ha podido completarse</h1>
+
+    <h3>El cliente ya se encuentra registrado: </h3>
+    <h3> <a href="/cliente_{{cliente.id}}/">{{cliente.nombre}} {{cliente.apellido}}</a> </h3>
+    </div>
+{% endblock %}

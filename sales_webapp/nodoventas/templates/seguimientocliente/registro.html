@@ -1,0 +1,49 @@
+
+{% extends "Base.html" %}
+{% load widget_tweaks %}
+{% block title %} Actualización {% endblock %}
+{% block main %}
+
+ <h1 class="page-title jumbotron centrar chiquitinas yupi">Actualización</h1>
+ <div class=container>
+ <form class="form" method="post" enctype="multipart/form-data">
+   {% csrf_token %}
+ <table class="table">
+   <tr>
+     <th>Nombre del cliente</th>
+     <td class="actualfila">
+       {% render_field form_act.cliente class="form-control" readonly="readonly" %}
+     </td>
+   </tr>
+   <tr>
+     <th>Fecha:</th>
+     <td class="actualfila">
+       {% render_field form_act.fecha type="date" class="form-control" readonly="readonly" %}
+     </td>
+   </tr>
+    <tr>
+      <th>Tipo de actualización</th>
+      <td class="actualfila">
+        {% render_field form_act.tipo id="id-tipoactualizacion" onchange="toggle_fechavisita()" class="form-control" %}
+      </td>
+    </tr>
+    <tr>
+      <th>Fecha de visita</th>
+      <td class="actualfila">
+        {% render_field form_act.fecha_visita id="id-fechavisita" type="date" class="form-control" readonly="readonly" %}
+      </td>
+    </tr>
+    <tr>
+      <th> Descripción/Observaciones</th>
+      <td>
+        {% render_field form_act.descripcion class="form-control" %}
+      </td>
+    </tr>
+ </table>
+ <div>
+   <button class="btn btn-primary botonverde" type=submit>Guardar</button>
+ </div>
+ </form>
+ <hr>
+ </div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% load widget_tweaks %}
+<div style="padding-bottom: 3%; padding-top: 1%">
+<table style="border-bottom:1px solid #E5E5E5; border-collapse:collapse; width: 85%">
+  <tr>
+    <td colspan="2"> <p style="text-align:center; font-variant: small-caps; font-weight: bold; font-size:15px; background-color: #E5E5E5; color: black">
+      {{nombre_archivo}}
+    </p></td>
+  </tr>
+  <tr>
+    <td style="padding-left: 3%"><p class="text-primary">Fecha:</p></td>
+    <td><p class="text-primary" style="padding-top: 3%">Archivo:</p></td>
+  </tr>
+  <tr>
+    <td style="width:70%; padding-left: 3%">
+      {% if var_edita %}
+      {% render_field form.fecha class="form-control" type="date" %}
+      {% else %}
+      {% render_field form.fecha class="form-control" type="date" readonly="readonly" %}
+      {% endif %}
+    </td>
+    <td>
+    {% if form.archivo %}
+    <div style="padding-bottom: 3%">
+    <a href="media/{{form.archivo.value}}" class="btn btn-portones btn-sm" target="_blank">Descargar</a>
+    </div>
+    {% endif %}
+    </td>
+  </tr>
+  {% if var_edita %}
+  <tr>
+    <td colspan="2" style="padding-left: 3%">
+      <p class="text-primary" style="padding-top: 3%">Modificar archivo:</p>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" style="padding-left: 3%">
+      <div style="padding-bottom:2%">
+        {% render_field form.archivo class="form-control" style="width:80%" %}
+      </div>
+    </td>
+  </tr>
+  {% else %}
+    <tr><td colspan="2" style="padding-bottom: 3%"><p></p></td></tr>
+  {% endif %}
+</table>
+</div>
