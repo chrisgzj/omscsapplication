@@ -1,6 +1,6 @@
 # Timetable design
 
-The aim of this software is to design a timetable for a school. The code builds the data according to an abstract model and uses an optimization engine for the solution. The main components of the problem are the courses (examples `1A`, `3C`, etc), the subjects (for example `Math_1A`) and the teachers (example `John Doe`). The assignment from subjects to courses and from teachers to subjects is already done. The only thing missing is to decide at what time each subject is taught.
+The aim of this software is to design a timetable for a school. The code builds the data structures according to an abstract model and uses an optimization engine for the solution. It has been used with real life problems for over 3 years. The main components of the problem are the courses (examples `1A`, `3C`, etc), the subjects (for example `Math_1A`) and the teachers (example `John Doe`). The assignment from subjects to courses and from teachers to subjects is already done. The only thing missing is to decide at what time each subject is taught.
 For that there are 45 possible slots (5 days a week, 9 possible times during the day).
 
 ## Parameters
