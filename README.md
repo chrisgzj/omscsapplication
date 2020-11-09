@@ -1,4 +1,4 @@
-Sample of projects created by Christian Gonzalez and selected for showcasing my work:
+# Sample of projects created by me and selected for showcasing my work:
 
 1) Timetable. Uses CPLEX Optimization Studio to create an optimal timetable for schools considering diverse constraints.
 2) Sales Webapp. Uses Django to create a web application for coordinating the sales department of a company.
